@@ -83,6 +83,14 @@ main  {
     flex-wrap: wrap;
 }
 
+.bg-active{
+    background-color: #6495ed;
+}
+
+.bg-bomb{
+    background-color: red;
+}
+
 /* footer */
 footer {
     height: 50px;

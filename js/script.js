@@ -6,96 +6,80 @@ Il computer deve generare 16 numeri casuali nello stesso range della difficoltà
 I numeri nella lista delle bombe non possono essere duplicati.
 In seguito l'utente clicca su una cella: se il numero è presente nella lista dei numeri generati - abbiamo calpestato una bomba - la cella si colora di rosso e la partita termina, altrimenti la cella cliccata si colora di azzurro e l'utente può continuare a cliccare sulle altre celle. La partita termina quando il giocatore clicca su una bomba o raggiunge il numero massimo possibile di numeri consentiti. Al termine della partita il software deve comunicare il punteggio, cioè il numero di volte che l’utente ha cliccato su una cella che non era una b.*/
 
-// seleziono pulsante play
+
+// Dichiaro gli eventi del pulsante
 let play = document.querySelector('button');
-// eventi quando ci clicco sopra
 play.addEventListener('click', function () {
-    // selezione elementi dal dom
-    let level = document.querySelector('select');
-    let active = document.querySelector('.hidden');
-    let grid = document.querySelector('.grid');
-    // dichiaro righe e colonne
-    let row = 0;
-    let col = 0;
-    
-    // definisco i livelli di difficoltà
+    let level = document.querySelector("select");
+    let active = document.querySelector(".hidden");
+    let container = document.querySelector(".grid");
+    let row;
+    let col;
+    //  Eventi in base alla scelta del livello
     switch (level.value) {
         case 'easy':
-            grid.innerHTML = '';
-            active.classList.remove('hidden');
-            active.classList.add('active');
+            container.innerHTML = "";
+            active.classList.add("active");
             row = 10;
             col = 10;
+            range = 101;
             createSquare(row, col);
-            bomb = getRndInt(1, 100);
             break;
-            case 'medium':
-                grid.innerHTML = '';
-                active.classList.remove('hidden');
-                active.classList.add('active');
-                row = 9;
-                col = 9;
-                createSquare(row, col);
-                bomb = getRndInt(1, 100);
-                break;
-                case 'hard':
-                    grid.innerHTML = '';
-                active.classList.remove('hidden');
-                active.classList.add('active');
-                row = 7;
-                col = 7;
-                createSquare(row, col);
-                bomb = getRndInt(1, 100);
-                break;
+        case 'medium':
+            container.innerHTML = "";
+            active.classList.add("active");
+            row = 9;
+            col = 9;
+            range = 82;
+            createSquare(row, col);
+            break;
+        case 'hard':
+            container.innerHTML = "";
+            active.classList.add("active");
+            row = 7;
+            col = 7;
+            range = 50;
+            createSquare(row, col);
+            break;
+    }
+    // Funzione per griglie, generazione array e clic
+    function createSquare(row, col) {
+        let container = document.querySelector(".grid");
+        let numberSquare = row * col;
+        // Creo un array per generare le "bombe"
+        let bombNumber = [];
+        while (bombNumber.length < 16) {
+            let number = Math.floor(Math.random() * range);
+            if (bombNumber.indexOf(number) === -1) bombNumber.push(number);
+        }
+        console.log(bombNumber);
+        // Creo la griglia
+        for (let i = 0; i < numberSquare; i++) {
+            let square = document.createElement('div');
+            square.classList.add('square');
+            square.style.width = `calc(100% / ${col})`;
+            square.style.height = `calc(100% / ${row})`;
+            let numbers = i + 1;
+            square.append(numbers);
+            container.append(square);
+
+            // Aggiungere BG al clic
+            square.addEventListener('click', function () {
+                if (bombNumber.includes(i + 1)) {
+                    for (let index = 0; index < range; index++) {
+                        let allBomb = document.querySelectorAll('.square');
+                        if (bombNumber.includes(index + 1)) {
+                            allBomb[index].classList.add('bg-bomb');
+                        }
+                    }
+                    let message = document.createElement('div');
+                    message.innerHTML = `Hai Perso. Ritenta`;
+                    message.classList.add('text');
+                    container.append(message);
+                } else {
+                    this.classList.add('bg-active');
+                }
+            })
+        }
     }
 })
-        
- // genero funzione per creare gli square
-function createSquare(row, col) {
-    // grandezza griglia in base agli square
-    let numberSquare = row * col;
-    
-    // genero square
-    for (let i = 0; i < numberSquare; i++) {
-        // seleziono griglia dal dom
-        let grid = document.querySelector('.grid');
-        // creo div per inserire gli square
-        let square = document.createElement('div');
-        // aggiungo classe e creo dimensioni square
-        square.classList.add('square');
-        square.style.width = `calc(${col})`;
-        square.style.height = `calc(${row})`;
-        // inserisco square nella griglia
-        let numbers = i + 1;
-        square.append(numbers);
-        grid.append('square');
-        
-        // quando clicco sullo square, diventa blu
-        square.addEventListener('click', function () {
-            this.style.backgroundColor = 'blue';
-        })
-    }
-}
-
-// genero numeri random nell'array "bomb"
-function getRndInt(min, max) {
-    // creo array vuoto
-    let bomb = [];
-    
-    // inserisco numeri nell'array senza duplicati
-    for (let i = 0; i < 16; i++) {
-        min = Math.ceil(min);
-        max = Math.floor(max);
-        
-        // min e max sono inclusivi
-        let element = bomb[i];
-        element = Math.floor(Math.random() * (max - min + 1)) + min;
-        
-        // controllo unicità numeri nell'array
-        while (bomb.includes(element)) {
-            element = Math.floor(Math.random() * (max - min + 1)) + min;
-        }
-        bomb.push(element);
-        }
-        return bomb
-    }
